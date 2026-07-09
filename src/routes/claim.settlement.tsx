@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Apple, ChevronLeft, ShieldCheck } from "lucide-react";
+import { Apple, Check, ChevronLeft, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/claim/settlement")({
   head: () => ({
