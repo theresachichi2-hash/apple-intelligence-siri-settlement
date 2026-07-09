@@ -73,8 +73,7 @@ function ClaimPage() {
     }
     setEligibilityError("");
     setWithdrawalError("");
-    setSubmitted(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    navigate({ to: "/claim/settlement" });
   };
 
   return (
