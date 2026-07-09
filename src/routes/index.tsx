@@ -122,6 +122,9 @@ function Index() {
             <section>
               <h2 className="text-xl font-semibold tracking-tight text-foreground">Who Is Eligible?</h2>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                If you purchased an eligible iPhone model (iPhone X through iPhone 17 Pro Max) between June 10, 2024, and March 29, 2026, you may qualify to submit a claim, subject to the final approval of the settlement by the court.
+              </p>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                 You may be eligible if you are a person in the United States who, between October 1, 2014 and
                 December 31, 2024, owned or used an Apple device with Siri enabled and whose voice interactions
                 may have been inadvertently triggered or recorded.
