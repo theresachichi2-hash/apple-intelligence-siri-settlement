@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -48,10 +48,12 @@ function Index() {
               Case No. 5:24-cv-01258 · United States District Court, N.D. California
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button size="lg" className="min-w-[200px] text-base">
-                File Your Claim
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+              <Link to="/claim">
+                <Button size="lg" className="min-w-[200px] text-base">
+                  File Your Claim
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </Link>
               <Button variant="outline" size="lg" className="min-w-[200px] text-base">
                 Check Eligibility
               </Button>
@@ -242,7 +244,9 @@ function Index() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button className="w-full">Start Your Claim</Button>
+                <Link to="/claim" className="block">
+                  <Button className="w-full">Start Your Claim</Button>
+                </Link>
                 <Button variant="outline" className="w-full">
                   <Users className="mr-2 h-4 w-4" />
                   File for Family Members
