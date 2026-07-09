@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Apple, ChevronLeft, Plus, Trash2, ShieldCheck } from "lucide-react";
 
@@ -42,6 +43,9 @@ function ClaimPage() {
     { model: "", serial: "", purchaseDate: "" },
   ]);
   const [submitted, setSubmitted] = useState(false);
+  const [ownedDevice, setOwnedDevice] = useState<string>("");
+  const [receivedNotice, setReceivedNotice] = useState<string>("");
+  const [eligibilityError, setEligibilityError] = useState<string>("");
 
   const addDevice = () => {
     if (devices.length < 5) setDevices([...devices, { model: "", serial: "", purchaseDate: "" }]);
@@ -53,6 +57,15 @@ function ClaimPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!ownedDevice || !receivedNotice) {
+      setEligibilityError("Please answer both eligibility declaration questions.");
+      return;
+    }
+    if (ownedDevice === "no") {
+      setEligibilityError("You must have owned or used an eligible Siri-enabled Apple device during the qualifying period to file a claim.");
+      return;
+    }
+    setEligibilityError("");
     setSubmitted(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
