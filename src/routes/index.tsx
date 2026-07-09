@@ -23,7 +23,7 @@ export const Route = createFileRoute("/")({
       { title: "Apple Intelligence & Siri Settlement — File Your Claim" },
       { name: "description", content: "Welcome to the official Apple Intelligence & Siri Settlement (2026) claim portal. Check your eligibility and file your claim today." },
       { property: "og:title", content: "Apple Intelligence & Siri Settlement — File Your Claim" },
-      { property: "og:description", content: "Welcome to the official Apple Intelligence & Siri Settlement (2026) claim portal." },
+      { property: "og:description", content: "Welcome to the official Apple Intelligence & Siri Settlement (2026) claim portal. Check your eligibility and file your claim today." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
