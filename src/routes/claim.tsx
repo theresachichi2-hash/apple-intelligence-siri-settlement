@@ -93,8 +93,6 @@ function ClaimPage() {
       </header>
 
       <main className="mx-auto max-w-3xl px-6 py-10 md:py-14">
-        (
-          <>
             <div className="mb-8">
               <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">
                 Complete Your Claim Information
@@ -396,8 +394,6 @@ function ClaimPage() {
                 </Button>
               </div>
             </form>
-          </>
-        )
       </main>
     </div>
   );
