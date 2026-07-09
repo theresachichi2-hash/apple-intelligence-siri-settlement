@@ -9,64 +9,58 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ClaimRouteImport } from './routes/claim'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ClaimIndexRouteImport } from './routes/claim.index'
 import { Route as ClaimSettlementRouteImport } from './routes/claim.settlement'
 
-const ClaimRoute = ClaimRouteImport.update({
-  id: '/claim',
-  path: '/claim',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ClaimIndexRoute = ClaimIndexRouteImport.update({
+  id: '/claim/',
+  path: '/claim/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ClaimSettlementRoute = ClaimSettlementRouteImport.update({
-  id: '/settlement',
-  path: '/settlement',
-  getParentRoute: () => ClaimRoute,
+  id: '/claim/settlement',
+  path: '/claim/settlement',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/claim': typeof ClaimRouteWithChildren
   '/claim/settlement': typeof ClaimSettlementRoute
+  '/claim/': typeof ClaimIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/claim': typeof ClaimRouteWithChildren
   '/claim/settlement': typeof ClaimSettlementRoute
+  '/claim': typeof ClaimIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/claim': typeof ClaimRouteWithChildren
   '/claim/settlement': typeof ClaimSettlementRoute
+  '/claim/': typeof ClaimIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/claim' | '/claim/settlement'
+  fullPaths: '/' | '/claim/settlement' | '/claim/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/claim' | '/claim/settlement'
-  id: '__root__' | '/' | '/claim' | '/claim/settlement'
+  to: '/' | '/claim/settlement' | '/claim'
+  id: '__root__' | '/' | '/claim/settlement' | '/claim/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ClaimRoute: typeof ClaimRouteWithChildren
+  ClaimSettlementRoute: typeof ClaimSettlementRoute
+  ClaimIndexRoute: typeof ClaimIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/claim': {
-      id: '/claim'
-      path: '/claim'
-      fullPath: '/claim'
-      preLoaderRoute: typeof ClaimRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -74,40 +68,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/claim/': {
+      id: '/claim/'
+      path: '/claim'
+      fullPath: '/claim/'
+      preLoaderRoute: typeof ClaimIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/claim/settlement': {
       id: '/claim/settlement'
-      path: '/settlement'
+      path: '/claim/settlement'
       fullPath: '/claim/settlement'
       preLoaderRoute: typeof ClaimSettlementRouteImport
-      parentRoute: typeof ClaimRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
 
-interface ClaimRouteChildren {
-  ClaimSettlementRoute: typeof ClaimSettlementRoute
-}
-
-const ClaimRouteChildren: ClaimRouteChildren = {
-  ClaimSettlementRoute: ClaimSettlementRoute,
-}
-
-const ClaimRouteWithChildren = ClaimRoute._addFileChildren(ClaimRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ClaimRoute: ClaimRouteWithChildren,
+  ClaimSettlementRoute: ClaimSettlementRoute,
+  ClaimIndexRoute: ClaimIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
