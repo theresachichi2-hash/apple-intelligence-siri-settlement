@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
-import { Apple, ChevronLeft, Plus, Trash2, ShieldCheck, Wallet, CreditCard, Banknote } from "lucide-react";
+import { Apple, ChevronLeft, Plus, Trash2, Wallet, CreditCard, Banknote } from "lucide-react";
 
 export const Route = createFileRoute("/claim")({
   head: () => ({
@@ -42,7 +42,7 @@ function ClaimPage() {
   const [devices, setDevices] = useState<Device[]>([
     { model: "", serial: "", purchaseDate: "" },
   ]);
-  const [submitted, setSubmitted] = useState(false);
+  const navigate = useNavigate();
   const [ownedDevice, setOwnedDevice] = useState<string>("");
   const [receivedNotice, setReceivedNotice] = useState<string>("");
   const [eligibilityError, setEligibilityError] = useState<string>("");
@@ -73,8 +73,7 @@ function ClaimPage() {
     }
     setEligibilityError("");
     setWithdrawalError("");
-    setSubmitted(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    navigate({ to: "/claim/settlement" });
   };
 
   return (
@@ -94,23 +93,7 @@ function ClaimPage() {
       </header>
 
       <main className="mx-auto max-w-3xl px-6 py-10 md:py-14">
-        {submitted ? (
-          <Card>
-            <CardHeader>
-              <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
-                <ShieldCheck className="h-6 w-6 text-primary" />
-              </div>
-              <CardTitle>Claim Submitted</CardTitle>
-              <CardDescription>
-                Thank you. Your claim has been received and will be reviewed by the Settlement Administrator.
-                You will receive a confirmation email shortly.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link to="/"><Button variant="outline">Return Home</Button></Link>
-            </CardContent>
-          </Card>
-        ) : (
+        (
           <>
             <div className="mb-8">
               <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">
@@ -414,7 +397,7 @@ function ClaimPage() {
               </div>
             </form>
           </>
-        )}
+        )
       </main>
     </div>
   );
