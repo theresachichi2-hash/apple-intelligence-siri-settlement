@@ -14,6 +14,7 @@ import {
   ChevronRight,
   AlertCircle,
   Apple,
+  Wallet,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
