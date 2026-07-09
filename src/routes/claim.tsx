@@ -46,6 +46,8 @@ function ClaimPage() {
   const [ownedDevice, setOwnedDevice] = useState<string>("");
   const [receivedNotice, setReceivedNotice] = useState<string>("");
   const [eligibilityError, setEligibilityError] = useState<string>("");
+  const [selectedWithdrawal, setSelectedWithdrawal] = useState<string>("");
+  const [withdrawalError, setWithdrawalError] = useState<string>("");
 
   const addDevice = () => {
     if (devices.length < 5) setDevices([...devices, { model: "", serial: "", purchaseDate: "" }]);
