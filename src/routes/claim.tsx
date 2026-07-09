@@ -241,6 +241,61 @@ function ClaimPage() {
               </Card>
 
               {/* Sworn Declaration */}
+              {/* Eligibility Declarations */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Eligibility Declarations</CardTitle>
+                  <CardDescription>
+                    You must answer each of the following questions truthfully under penalty of perjury.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="space-y-3">
+                    <Label className="text-sm font-normal leading-relaxed text-foreground">
+                      1. Did you own or use an eligible Siri-enabled Apple device during the qualifying period?
+                    </Label>
+                    <RadioGroup
+                      value={ownedDevice}
+                      onValueChange={setOwnedDevice}
+                      className="flex gap-6"
+                    >
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem value="yes" id="owned-yes" />
+                        <Label htmlFor="owned-yes" className="font-normal">Yes</Label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem value="no" id="owned-no" />
+                        <Label htmlFor="owned-no" className="font-normal">No</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                  <Separator />
+                  <div className="space-y-3">
+                    <Label className="text-sm font-normal leading-relaxed text-foreground">
+                      2. Did you receive a settlement notice by mail or from another authorized source regarding this settlement?
+                    </Label>
+                    <RadioGroup
+                      value={receivedNotice}
+                      onValueChange={setReceivedNotice}
+                      className="flex gap-6"
+                    >
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem value="yes" id="notice-yes" />
+                        <Label htmlFor="notice-yes" className="font-normal">Yes</Label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem value="no" id="notice-no" />
+                        <Label htmlFor="notice-no" className="font-normal">No</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                  {eligibilityError && (
+                    <p className="text-sm text-destructive">{eligibilityError}</p>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Sworn Declaration */}
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Sworn Declaration</CardTitle>
