@@ -11,7 +11,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Apple, ChevronLeft, Plus, Trash2, Wallet, CreditCard, Banknote } from "lucide-react";
 
-export const Route = createFileRoute("/claim")({
+export const Route = createFileRoute("/claim/")({
   head: () => ({
     meta: [
       { title: "Complete Your Claim — Apple Siri Settlement" },
