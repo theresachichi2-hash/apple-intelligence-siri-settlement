@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Apple, ChevronLeft, Plus, Trash2, ShieldCheck } from "lucide-react";
 
@@ -42,6 +43,9 @@ function ClaimPage() {
     { model: "", serial: "", purchaseDate: "" },
   ]);
   const [submitted, setSubmitted] = useState(false);
+  const [ownedDevice, setOwnedDevice] = useState<string>("");
+  const [receivedNotice, setReceivedNotice] = useState<string>("");
+  const [eligibilityError, setEligibilityError] = useState<string>("");
 
   const addDevice = () => {
     if (devices.length < 5) setDevices([...devices, { model: "", serial: "", purchaseDate: "" }]);
@@ -53,6 +57,15 @@ function ClaimPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!ownedDevice || !receivedNotice) {
+      setEligibilityError("Please answer both eligibility declaration questions.");
+      return;
+    }
+    if (ownedDevice === "no") {
+      setEligibilityError("You must have owned or used an eligible Siri-enabled Apple device during the qualifying period to file a claim.");
+      return;
+    }
+    setEligibilityError("");
     setSubmitted(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -223,6 +236,61 @@ function ClaimPage() {
                       <Plus className="mr-2 h-4 w-4" />
                       Add Another Device
                     </Button>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Sworn Declaration */}
+              {/* Eligibility Declarations */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Eligibility Declarations</CardTitle>
+                  <CardDescription>
+                    You must answer each of the following questions truthfully under penalty of perjury.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="space-y-3">
+                    <Label className="text-sm font-normal leading-relaxed text-foreground">
+                      1. Did you own or use an eligible Siri-enabled Apple device during the qualifying period?
+                    </Label>
+                    <RadioGroup
+                      value={ownedDevice}
+                      onValueChange={setOwnedDevice}
+                      className="flex gap-6"
+                    >
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem value="yes" id="owned-yes" />
+                        <Label htmlFor="owned-yes" className="font-normal">Yes</Label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem value="no" id="owned-no" />
+                        <Label htmlFor="owned-no" className="font-normal">No</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                  <Separator />
+                  <div className="space-y-3">
+                    <Label className="text-sm font-normal leading-relaxed text-foreground">
+                      2. Did you receive a settlement notice by mail or from another authorized source regarding this settlement?
+                    </Label>
+                    <RadioGroup
+                      value={receivedNotice}
+                      onValueChange={setReceivedNotice}
+                      className="flex gap-6"
+                    >
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem value="yes" id="notice-yes" />
+                        <Label htmlFor="notice-yes" className="font-normal">Yes</Label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem value="no" id="notice-no" />
+                        <Label htmlFor="notice-no" className="font-normal">No</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                  {eligibilityError && (
+                    <p className="text-sm text-destructive">{eligibilityError}</p>
                   )}
                 </CardContent>
               </Card>
