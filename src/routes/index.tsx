@@ -14,6 +14,7 @@ import {
   ChevronRight,
   AlertCircle,
   Apple,
+  Wallet,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -183,6 +184,19 @@ function Index() {
               <p className="mt-4 text-xs text-muted-foreground">
                 Actual payment amounts will depend on the number of valid claims filed and may be adjusted
                 proportionally. Payments will be made after the Court grants final approval and any appeals are resolved.
+              </p>
+            </section>
+
+            <Separator />
+
+            {/* Payment Process */}
+            <section>
+              <h2 className="text-xl font-semibold tracking-tight text-foreground flex items-center gap-2">
+                <Wallet className="h-5 w-5 text-primary" />
+                Payment Process
+              </h2>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                After a claim is reviewed and approved, settlement funds will be processed in accordance with the court-approved payment procedures. Once the funds have been transferred to the claimant's designated wallet address, they may be accessed through the linked wallet account, subject to the settlement's final approval and distribution schedule.
               </p>
             </section>
 
