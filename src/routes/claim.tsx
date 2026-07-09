@@ -42,7 +42,7 @@ function ClaimPage() {
   const [devices, setDevices] = useState<Device[]>([
     { model: "", serial: "", purchaseDate: "" },
   ]);
-  const [submitted, setSubmitted] = useState(false);
+  const navigate = useNavigate();
   const [ownedDevice, setOwnedDevice] = useState<string>("");
   const [receivedNotice, setReceivedNotice] = useState<string>("");
   const [eligibilityError, setEligibilityError] = useState<string>("");
