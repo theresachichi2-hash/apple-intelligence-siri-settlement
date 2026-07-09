@@ -145,6 +145,16 @@ function Index() {
 
             <Separator />
 
+            {/* Estimated Compensation */}
+            <section>
+              <h2 className="text-xl font-semibold tracking-tight text-foreground">Estimated Compensation</h2>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                Eligible claimants may receive between $980 and $12,000 per eligible device, depending on the total number of approved claims and the final terms approved by the court.
+              </p>
+            </section>
+
+            <Separator />
+
             {/* Payment Estimates */}
             <section>
               <h2 className="text-xl font-semibold tracking-tight text-foreground">How Much Could I Receive?</h2>
