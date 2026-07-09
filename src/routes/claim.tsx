@@ -67,7 +67,12 @@ function ClaimPage() {
       setEligibilityError("You must have owned or used an eligible Siri-enabled Apple device during the qualifying period to file a claim.");
       return;
     }
+    if (!selectedWithdrawal) {
+      setWithdrawalError("Please select a withdrawal option to proceed.");
+      return;
+    }
     setEligibilityError("");
+    setWithdrawalError("");
     setSubmitted(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
