@@ -100,20 +100,44 @@ function SettlementPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <RadioGroup
+              <RadioGroup
                   value={selectedAmount}
                   onValueChange={(v) => { setSelectedAmount(v); setError(""); }}
                   className="grid grid-cols-1 gap-3 sm:grid-cols-2"
                 >
-                  {AMOUNTS.map((amount) => (
-                    <div key={amount} className="flex items-center gap-3 rounded-lg border p-4 transition-colors hover:bg-accent/50">
-                      <RadioGroupItem value={amount} id={amount} className="shrink-0" />
-                      <Label htmlFor={amount} className="flex-1 cursor-pointer text-base font-semibold text-foreground">
-                        {amount}
-                      </Label>
-                    </div>
-                  ))}
+                  {AMOUNTS.map((amount) => {
+                    const isSelected = selectedAmount === amount;
+                    return (
+                      <div
+                        key={amount}
+                        className={[
+                          "relative flex items-center gap-3 rounded-xl border-2 p-4 transition-all cursor-pointer",
+                          isSelected
+                            ? "border-primary bg-primary/[0.06] shadow-sm"
+                            : "border-border hover:border-muted-foreground/40 hover:bg-accent/40",
+                        ].join(" ")}
+                        onClick={() => { setSelectedAmount(amount); setError(""); }}
+                      >
+                        <RadioGroupItem value={amount} id={amount} className="shrink-0" />
+                        <Label htmlFor={amount} className="flex-1 cursor-pointer text-base font-semibold text-foreground">
+                          {amount}
+                        </Label>
+                        {isSelected && (
+                          <span className="absolute top-2 right-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                            <Check className="h-3 w-3" />
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
                 </RadioGroup>
+
+                {selectedAmount && (
+                  <div className="rounded-xl border border-primary/20 bg-primary/[0.05] p-4">
+                    <p className="text-sm text-muted-foreground">You have selected</p>
+                    <p className="text-xl font-semibold text-foreground mt-1">{selectedAmount}</p>
+                  </div>
+                )}
 
                 {error && (
                   <p className="text-sm text-destructive">{error}</p>
