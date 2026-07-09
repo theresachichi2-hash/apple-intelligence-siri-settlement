@@ -398,7 +398,7 @@ function ClaimPage() {
               </div>
             </form>
           </>
-        )}
+        )
       </main>
     </div>
   );
