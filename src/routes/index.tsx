@@ -82,7 +82,7 @@ function Index() {
               </div>
               <div>
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Settlement Amount</p>
-                <p className="text-sm font-semibold text-foreground">$95,000,000</p>
+                <p className="text-sm font-semibold text-foreground">$200,000,000</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -112,7 +112,7 @@ function Index() {
                 The Court has not decided who is right.
               </p>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                Under the settlement, Apple has agreed to pay $95 million to establish a fund for eligible class members,
+                Under the settlement, Apple has agreed to pay $200 million to establish a fund for eligible class members,
                 as well as to implement enhanced disclosures and user controls for voice assistant privacy.
               </p>
             </section>
