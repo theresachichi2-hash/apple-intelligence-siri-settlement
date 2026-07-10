@@ -14,7 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      claim_submissions: {
+        Row: {
+          address: string | null
+          city: string | null
+          created_at: string
+          devices: Json
+          email: string | null
+          first_name: string | null
+          id: string
+          last_name: string | null
+          notes: string | null
+          owned_device: string | null
+          phone: string | null
+          received_notice: string | null
+          signature: string | null
+          state: string | null
+          withdrawal_option: string | null
+          zip: string | null
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          devices?: Json
+          email?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          notes?: string | null
+          owned_device?: string | null
+          phone?: string | null
+          received_notice?: string | null
+          signature?: string | null
+          state?: string | null
+          withdrawal_option?: string | null
+          zip?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          devices?: Json
+          email?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          notes?: string | null
+          owned_device?: string | null
+          phone?: string | null
+          received_notice?: string | null
+          signature?: string | null
+          state?: string | null
+          withdrawal_option?: string | null
+          zip?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
