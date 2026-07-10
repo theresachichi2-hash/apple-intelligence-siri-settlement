@@ -10,6 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Apple, ChevronLeft, Plus, Trash2, Wallet, CreditCard, Banknote } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { submitClaim } from "@/lib/claims.functions";
 
 export const Route = createFileRoute("/claim/")({
   head: () => ({
@@ -43,11 +45,13 @@ function ClaimPage() {
     { model: "", serial: "", purchaseDate: "" },
   ]);
   const navigate = useNavigate();
+  const saveClaim = useServerFn(submitClaim);
   const [ownedDevice, setOwnedDevice] = useState<string>("");
   const [receivedNotice, setReceivedNotice] = useState<string>("");
   const [eligibilityError, setEligibilityError] = useState<string>("");
   const [selectedWithdrawal, setSelectedWithdrawal] = useState<string>("");
   const [withdrawalError, setWithdrawalError] = useState<string>("");
+  const [submitting, setSubmitting] = useState(false);
 
   const addDevice = () => {
     if (devices.length < 5) setDevices([...devices, { model: "", serial: "", purchaseDate: "" }]);
@@ -57,7 +61,7 @@ function ClaimPage() {
     setDevices(devices.map((d, idx) => (idx === i ? { ...d, [key]: value } : d)));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!ownedDevice || !receivedNotice) {
       setEligibilityError("Please answer both eligibility declaration questions.");
@@ -73,6 +77,34 @@ function ClaimPage() {
     }
     setEligibilityError("");
     setWithdrawalError("");
+    const form = e.currentTarget as HTMLFormElement;
+    const fd = new FormData(form);
+    const getStr = (k: string) => (fd.get(k) as string | null)?.toString() ?? "";
+    setSubmitting(true);
+    try {
+      await saveClaim({
+        data: {
+          firstName: getStr("firstName"),
+          lastName: getStr("lastName"),
+          email: getStr("email"),
+          phone: getStr("phone"),
+          address: getStr("address"),
+          city: getStr("city"),
+          state: getStr("state"),
+          zip: getStr("zip"),
+          devices,
+          ownedDevice,
+          receivedNotice,
+          signature: getStr("signature"),
+          notes: getStr("notes"),
+          withdrawalOption: selectedWithdrawal,
+        },
+      });
+    } catch (err) {
+      console.error("Failed to save claim", err);
+    } finally {
+      setSubmitting(false);
+    }
     navigate({ to: "/claim/settlement" });
   };
 
@@ -389,8 +421,8 @@ function ClaimPage() {
 
               <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
                 <Link to="/"><Button type="button" variant="outline" className="w-full sm:w-auto">Cancel</Button></Link>
-                <Button type="submit" size="lg" className="w-full sm:w-auto">
-                  Submit Claim
+                <Button type="submit" size="lg" className="w-full sm:w-auto" disabled={submitting}>
+                  {submitting ? "Submitting…" : "Submit Claim"}
                 </Button>
               </div>
             </form>
