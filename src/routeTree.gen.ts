@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AppleIntelligenceRouteImport } from './routes/apple-intelligence'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ClaimIndexRouteImport } from './routes/claim.index'
 import { Route as ClaimSettlementRouteImport } from './routes/claim.settlement'
 import { Route as ApiSupportChatRouteImport } from './routes/api/support-chat'
 
+const AppleIntelligenceRoute = AppleIntelligenceRouteImport.update({
+  id: '/apple-intelligence',
+  path: '/apple-intelligence',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -37,12 +43,14 @@ const ApiSupportChatRoute = ApiSupportChatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/apple-intelligence': typeof AppleIntelligenceRoute
   '/api/support-chat': typeof ApiSupportChatRoute
   '/claim/settlement': typeof ClaimSettlementRoute
   '/claim/': typeof ClaimIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/apple-intelligence': typeof AppleIntelligenceRoute
   '/api/support-chat': typeof ApiSupportChatRoute
   '/claim/settlement': typeof ClaimSettlementRoute
   '/claim': typeof ClaimIndexRoute
@@ -50,20 +58,38 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/apple-intelligence': typeof AppleIntelligenceRoute
   '/api/support-chat': typeof ApiSupportChatRoute
   '/claim/settlement': typeof ClaimSettlementRoute
   '/claim/': typeof ClaimIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/support-chat' | '/claim/settlement' | '/claim/'
+  fullPaths:
+    | '/'
+    | '/apple-intelligence'
+    | '/api/support-chat'
+    | '/claim/settlement'
+    | '/claim/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/support-chat' | '/claim/settlement' | '/claim'
-  id: '__root__' | '/' | '/api/support-chat' | '/claim/settlement' | '/claim/'
+  to:
+    | '/'
+    | '/apple-intelligence'
+    | '/api/support-chat'
+    | '/claim/settlement'
+    | '/claim'
+  id:
+    | '__root__'
+    | '/'
+    | '/apple-intelligence'
+    | '/api/support-chat'
+    | '/claim/settlement'
+    | '/claim/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppleIntelligenceRoute: typeof AppleIntelligenceRoute
   ApiSupportChatRoute: typeof ApiSupportChatRoute
   ClaimSettlementRoute: typeof ClaimSettlementRoute
   ClaimIndexRoute: typeof ClaimIndexRoute
@@ -71,6 +97,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/apple-intelligence': {
+      id: '/apple-intelligence'
+      path: '/apple-intelligence'
+      fullPath: '/apple-intelligence'
+      preLoaderRoute: typeof AppleIntelligenceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -104,6 +137,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppleIntelligenceRoute: AppleIntelligenceRoute,
   ApiSupportChatRoute: ApiSupportChatRoute,
   ClaimSettlementRoute: ClaimSettlementRoute,
   ClaimIndexRoute: ClaimIndexRoute,
