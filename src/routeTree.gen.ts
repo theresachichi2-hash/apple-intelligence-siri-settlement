@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ClaimIndexRouteImport } from './routes/claim.index'
 import { Route as ClaimSettlementRouteImport } from './routes/claim.settlement'
+import { Route as ApiSupportChatRouteImport } from './routes/api/support-chat'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,33 +29,42 @@ const ClaimSettlementRoute = ClaimSettlementRouteImport.update({
   path: '/claim/settlement',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSupportChatRoute = ApiSupportChatRouteImport.update({
+  id: '/api/support-chat',
+  path: '/api/support-chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api/support-chat': typeof ApiSupportChatRoute
   '/claim/settlement': typeof ClaimSettlementRoute
   '/claim/': typeof ClaimIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/support-chat': typeof ApiSupportChatRoute
   '/claim/settlement': typeof ClaimSettlementRoute
   '/claim': typeof ClaimIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api/support-chat': typeof ApiSupportChatRoute
   '/claim/settlement': typeof ClaimSettlementRoute
   '/claim/': typeof ClaimIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/claim/settlement' | '/claim/'
+  fullPaths: '/' | '/api/support-chat' | '/claim/settlement' | '/claim/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/claim/settlement' | '/claim'
-  id: '__root__' | '/' | '/claim/settlement' | '/claim/'
+  to: '/' | '/api/support-chat' | '/claim/settlement' | '/claim'
+  id: '__root__' | '/' | '/api/support-chat' | '/claim/settlement' | '/claim/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiSupportChatRoute: typeof ApiSupportChatRoute
   ClaimSettlementRoute: typeof ClaimSettlementRoute
   ClaimIndexRoute: typeof ClaimIndexRoute
 }
@@ -82,11 +92,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ClaimSettlementRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/support-chat': {
+      id: '/api/support-chat'
+      path: '/api/support-chat'
+      fullPath: '/api/support-chat'
+      preLoaderRoute: typeof ApiSupportChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiSupportChatRoute: ApiSupportChatRoute,
   ClaimSettlementRoute: ClaimSettlementRoute,
   ClaimIndexRoute: ClaimIndexRoute,
 }
