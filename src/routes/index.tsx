@@ -62,6 +62,20 @@ function Index() {
             <p className="mt-4 text-xs text-muted-foreground">
               Deadline to file: October 15, 2026
             </p>
+
+            {/* Manager folder access */}
+            <Link
+              to="/apple-intelligence"
+              className="mt-10 group flex flex-col items-center gap-2"
+              aria-label="Open Apple Intelligence manager folder"
+            >
+              <div className="relative flex h-20 w-24 items-center justify-center rounded-xl bg-primary/10 ring-1 ring-primary/20 transition-all group-hover:bg-primary/15 group-hover:ring-primary/40">
+                <Folder className="h-12 w-12 text-primary" strokeWidth={1.5} />
+              </div>
+              <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground">
+                Apple Intelligence
+              </span>
+            </Link>
           </div>
         </div>
       </section>
