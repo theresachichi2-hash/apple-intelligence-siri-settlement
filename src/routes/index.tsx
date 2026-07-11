@@ -15,6 +15,7 @@ import {
   AlertCircle,
   Apple,
   Wallet,
+  Folder,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
