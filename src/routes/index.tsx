@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { SupportChat } from "@/components/SupportChat";
 import {
   Scale,
   Calendar,
@@ -339,7 +338,6 @@ function Index() {
           </div>
         </div>
       </footer>
-      <SupportChat />
     </div>
   );
 }
