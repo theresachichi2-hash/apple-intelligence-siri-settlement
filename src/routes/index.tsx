@@ -114,7 +114,7 @@ function Index() {
                 The Court has not decided who is right.
               </p>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                Under the settlement, Apple has agreed to pay $200 million to establish a fund for eligible class members,
+                Under the settlement, Apple has agreed to pay $250 million to establish a fund for eligible class members,
                 as well as to implement enhanced disclosures and user controls for voice assistant privacy.
               </p>
             </section>
