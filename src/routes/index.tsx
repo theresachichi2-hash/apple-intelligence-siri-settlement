@@ -161,25 +161,35 @@ function Index() {
             {/* Payment Estimates */}
             <section>
               <h2 className="text-xl font-semibold tracking-tight text-foreground">How Much Could I Receive?</h2>
-              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <Card>
                   <CardHeader className="pb-3">
                     <CardTitle className="text-base">Standard Claim</CardTitle>
                     <CardDescription>One device / one claim</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-2xl font-semibold text-foreground">Up to $20</p>
-                    <p className="mt-1 text-xs text-muted-foreground">Per eligible device, up to 5 devices</p>
+                    <p className="text-2xl font-semibold text-foreground">$1,980</p>
+                    <p className="mt-1 text-xs text-muted-foreground">No documentation required</p>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardHeader className="pb-3">
                     <CardTitle className="text-base">Documented Claim</CardTitle>
-                    <CardDescription>With supporting documentation</CardDescription>
+                    <CardDescription>With proof of ownership</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-2xl font-semibold text-foreground">Up to $100</p>
-                    <p className="mt-1 text-xs text-muted-foreground">Per device, up to 5 devices</p>
+                    <p className="text-2xl font-semibold text-foreground">$12,980</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Upload proof of ownership required</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base">Family Claim</CardTitle>
+                    <CardDescription>Household / family plan</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-2xl font-semibold text-foreground">$20,980</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Multiple family members covered</p>
                   </CardContent>
                 </Card>
               </div>
