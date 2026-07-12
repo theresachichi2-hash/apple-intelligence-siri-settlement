@@ -84,7 +84,7 @@ function Index() {
               </div>
               <div>
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Settlement Amount</p>
-                <p className="text-sm font-semibold text-foreground">$200,000,000</p>
+                <p className="text-sm font-semibold text-foreground">$250,000,000</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
