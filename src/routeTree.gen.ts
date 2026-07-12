@@ -13,7 +13,6 @@ import { Route as AppleIntelligenceRouteImport } from './routes/apple-intelligen
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ClaimIndexRouteImport } from './routes/claim.index'
 import { Route as ClaimSettlementRouteImport } from './routes/claim.settlement'
-import { Route as ApiSupportChatRouteImport } from './routes/api/support-chat'
 
 const AppleIntelligenceRoute = AppleIntelligenceRouteImport.update({
   id: '/apple-intelligence',
@@ -35,23 +34,16 @@ const ClaimSettlementRoute = ClaimSettlementRouteImport.update({
   path: '/claim/settlement',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiSupportChatRoute = ApiSupportChatRouteImport.update({
-  id: '/api/support-chat',
-  path: '/api/support-chat',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/apple-intelligence': typeof AppleIntelligenceRoute
-  '/api/support-chat': typeof ApiSupportChatRoute
   '/claim/settlement': typeof ClaimSettlementRoute
   '/claim/': typeof ClaimIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/apple-intelligence': typeof AppleIntelligenceRoute
-  '/api/support-chat': typeof ApiSupportChatRoute
   '/claim/settlement': typeof ClaimSettlementRoute
   '/claim': typeof ClaimIndexRoute
 }
@@ -59,38 +51,20 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/apple-intelligence': typeof AppleIntelligenceRoute
-  '/api/support-chat': typeof ApiSupportChatRoute
   '/claim/settlement': typeof ClaimSettlementRoute
   '/claim/': typeof ClaimIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/apple-intelligence'
-    | '/api/support-chat'
-    | '/claim/settlement'
-    | '/claim/'
+  fullPaths: '/' | '/apple-intelligence' | '/claim/settlement' | '/claim/'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/apple-intelligence'
-    | '/api/support-chat'
-    | '/claim/settlement'
-    | '/claim'
-  id:
-    | '__root__'
-    | '/'
-    | '/apple-intelligence'
-    | '/api/support-chat'
-    | '/claim/settlement'
-    | '/claim/'
+  to: '/' | '/apple-intelligence' | '/claim/settlement' | '/claim'
+  id: '__root__' | '/' | '/apple-intelligence' | '/claim/settlement' | '/claim/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppleIntelligenceRoute: typeof AppleIntelligenceRoute
-  ApiSupportChatRoute: typeof ApiSupportChatRoute
   ClaimSettlementRoute: typeof ClaimSettlementRoute
   ClaimIndexRoute: typeof ClaimIndexRoute
 }
@@ -125,33 +99,15 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ClaimSettlementRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/support-chat': {
-      id: '/api/support-chat'
-      path: '/api/support-chat'
-      fullPath: '/api/support-chat'
-      preLoaderRoute: typeof ApiSupportChatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppleIntelligenceRoute: AppleIntelligenceRoute,
-  ApiSupportChatRoute: ApiSupportChatRoute,
   ClaimSettlementRoute: ClaimSettlementRoute,
   ClaimIndexRoute: ClaimIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
