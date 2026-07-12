@@ -204,6 +204,26 @@ function ClaimPage() {
       </header>
 
       <main className="mx-auto max-w-3xl px-6 py-10 md:py-14">
+            {submitted && submittedData ? (
+              <Card className="mb-8 border-primary/30 bg-primary/[0.04]">
+                <CardHeader>
+                  <CardTitle className="text-lg">Claim Submitted</CardTitle>
+                  <CardDescription>
+                    Your claim information has been recorded. Your mail app has been opened with all of your
+                    registered information (name, email, cell phone, address, devices{claimType === "documented" ? ", and proof of ownership attachment" : ""})
+                    pre-addressed to <strong className="text-foreground">{SETTLEMENT_EMAIL}</strong>.
+                    If it did not open, tap the button below.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col sm:flex-row gap-3">
+                  <Button onClick={() => submittedData && mailClaim(submittedData)}>
+                    Re-send Claim Email
+                  </Button>
+                  <Link to="/"><Button variant="outline">Return Home</Button></Link>
+                </CardContent>
+              </Card>
+            ) : (
+              <>
             <div className="mb-8">
               <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">
                 Complete Your Claim Information
