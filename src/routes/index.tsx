@@ -15,7 +15,6 @@ import {
   AlertCircle,
   Apple,
   Wallet,
-  Folder,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -62,20 +61,6 @@ function Index() {
             <p className="mt-4 text-xs text-muted-foreground">
               Deadline to file: October 15, 2026
             </p>
-
-            {/* Manager folder access */}
-            <Link
-              to="/apple-intelligence"
-              className="mt-10 group flex flex-col items-center gap-2"
-              aria-label="Open Apple Intelligence manager folder"
-            >
-              <div className="relative flex h-20 w-24 items-center justify-center rounded-xl bg-primary/10 ring-1 ring-primary/20 transition-all group-hover:bg-primary/15 group-hover:ring-primary/40">
-                <Folder className="h-12 w-12 text-primary" strokeWidth={1.5} />
-              </div>
-              <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground">
-                Apple Intelligence
-              </span>
-            </Link>
           </div>
         </div>
       </section>
@@ -99,7 +84,7 @@ function Index() {
               </div>
               <div>
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Settlement Amount</p>
-                <p className="text-sm font-semibold text-foreground">$200,000,000</p>
+                <p className="text-sm font-semibold text-foreground">$250,000,000</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -129,7 +114,7 @@ function Index() {
                 The Court has not decided who is right.
               </p>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                Under the settlement, Apple has agreed to pay $200 million to establish a fund for eligible class members,
+                Under the settlement, Apple has agreed to pay $250 million to establish a fund for eligible class members,
                 as well as to implement enhanced disclosures and user controls for voice assistant privacy.
               </p>
             </section>
@@ -167,7 +152,7 @@ function Index() {
             <section>
               <h2 className="text-xl font-semibold tracking-tight text-foreground">Estimated Compensation</h2>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                Eligible claimants may receive between $980 and $12,000 per eligible device, depending on the total number of approved claims and the final terms approved by the court.
+                Eligible claimants may receive between $1,980 and $20,980 per eligible claim, depending on the claim type and the final terms approved by the court.
               </p>
             </section>
 
@@ -176,25 +161,35 @@ function Index() {
             {/* Payment Estimates */}
             <section>
               <h2 className="text-xl font-semibold tracking-tight text-foreground">How Much Could I Receive?</h2>
-              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <Card>
                   <CardHeader className="pb-3">
                     <CardTitle className="text-base">Standard Claim</CardTitle>
                     <CardDescription>One device / one claim</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-2xl font-semibold text-foreground">Up to $20</p>
-                    <p className="mt-1 text-xs text-muted-foreground">Per eligible device, up to 5 devices</p>
+                    <p className="text-2xl font-semibold text-foreground">$1,980</p>
+                    <p className="mt-1 text-xs text-muted-foreground">No documentation required</p>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardHeader className="pb-3">
                     <CardTitle className="text-base">Documented Claim</CardTitle>
-                    <CardDescription>With supporting documentation</CardDescription>
+                    <CardDescription>With proof of ownership</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-2xl font-semibold text-foreground">Up to $100</p>
-                    <p className="mt-1 text-xs text-muted-foreground">Per device, up to 5 devices</p>
+                    <p className="text-2xl font-semibold text-foreground">$12,980</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Upload proof of ownership required</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base">Family Claim</CardTitle>
+                    <CardDescription>Household / family plan</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-2xl font-semibold text-foreground">$20,980</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Multiple family members covered</p>
                   </CardContent>
                 </Card>
               </div>
@@ -314,12 +309,12 @@ function Index() {
                 <p>
                   <strong className="text-foreground">Call</strong>
                   <br />
-                  1-800-555-0199 (toll-free)
+                  1-985-602-3749 (toll-free)
                 </p>
                 <p>
                   <strong className="text-foreground">Email</strong>
                   <br />
-                  info@siri-settlement.com
+                  applesettlementclaim@icloud.com
                 </p>
               </CardContent>
             </Card>
