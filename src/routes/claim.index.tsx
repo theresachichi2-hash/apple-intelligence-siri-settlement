@@ -130,7 +130,7 @@ function ClaimPage() {
                 Complete Your Claim Information
               </h1>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                To proceed with your Apple $250 Million Siri Settlement claim (<em>Lopez v. Apple Inc.</em>),
+                To proceed with your Apple $250,000,000 Siri Settlement claim (<em>Lopez v. Apple Inc.</em>),
                 please provide your personal information and eligible device details below. You will also be
                 required to make a sworn declaration confirming that you meet the eligibility requirements.
               </p>
