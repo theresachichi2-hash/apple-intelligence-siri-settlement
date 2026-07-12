@@ -309,12 +309,12 @@ function Index() {
                 <p>
                   <strong className="text-foreground">Call</strong>
                   <br />
-                  1-800-555-0199 (toll-free)
+                  1-985-602-3749 (toll-free)
                 </p>
                 <p>
                   <strong className="text-foreground">Email</strong>
                   <br />
-                  info@siri-settlement.com
+                  applesettlementclaim@icloud.com
                 </p>
               </CardContent>
             </Card>
