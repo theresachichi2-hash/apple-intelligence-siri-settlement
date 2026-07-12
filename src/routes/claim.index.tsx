@@ -553,6 +553,8 @@ function ClaimPage() {
                 </Button>
               </div>
             </form>
+              </>
+            )}
       </main>
     </div>
   );
